@@ -1,69 +1,200 @@
-local gui = Instance.new("ScreenGui")
-local frame = Instance.new("Frame")
-local textLabel = Instance.new("TextLabel")
-local textButton = Instance.new("TextButton")
-local textBox = Instance.new("TextBox")
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Calculadora</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caacupe+One&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chewy&family=Henny+Penny&family=Roboto+Slab:wght@100..900&display=swap" rel="stylesheet">
+  <style>
+    body {
+      transform: scale(0.95);
+      background-color: #FF9CF2;
+      font-family: "Chewy", serif;
+    }
+    button {
+      background-color: #ABFFA8;
+      padding: 20px;
+      font-size: 20px;
+      font-weight: 700;
+      font-family: "Chewy", serif;
+      border-radius: 20px;
+      border: 2.5px solid #00AB1C;
+      box-shadow: 0 2px 0 #7ACC7A;
+    } .linha button.sv {
+      animation: tamanho 0.5s ease;
+    } @keyframes tamanho {
+      0% { transform: scale(1.0); opacity: 1.0 }
+      50% { transform: scale(1.07); opacity: 0.7 }
+      100% { transform: scale(1.0); opacity: 1.0; }
+    }
+    #display {
+      animation: flutuar 2.4s infinite ease-in-out;
+      background: linear-gradient(450deg, #EE99FF, #FA66FF);
+      padding: 30px;
+      overflow: hidden;
+      color: white;
+      font-size: 30px;
+      font-weight: 700;
+      border-radius: 5vh;
+      border: 4px solid #D359FF;
+      transition: 0.7s ease;
+    } 
+    @keyframes flutuar {
+      0% { transform: translateY(0px); }
+      50% { transform: translateY(4px); }
+      100% { transform: translateY(0px)}
+    }
+    .linha {
+      display: grid;
+      position: relative;
+      bottom: -10px;
+      grid-template-columns: repeat(4, 1fr);
+      margin: 5px;
+      gap: 6px;
+      max-height: 80px;
+      max-width: 400px;
+    }
+  
+    .btn-operador {
+      background-color: #B7D9FF;
+      border: 2.5px solid #6B9DFF;
+    }
+    #bonit {
+      position: absolute;
+      border-radius: 35px 35px 50px 50px;
+      border: 6px solid #E1A6BF;
+      background-color: #FFD1E8;
+      width: 350px;
+      max-width: 600px;
+      min-height: 590px;
+      max-height: 590px;
+      top: 49%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      z-index: -1;
+    } 
+    .linha-full {
+      display: flex;
+      justify-content: center;
+      margin: 18px 0;
+    }
 
--- GUI
-gui.Name = "gui"
-gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-gui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+    .linha-full button {
+      padding: 20px 20px;
+      font-size: 16px;
+      border-radius: 15px;
+      background-color: #FFB7B7 !important;
+      border: 2.5px solid #FF6B6B !important;
+      box-shadow: 0 2px 0 #E55A5A !important;
+      width: auto;
+      min-width: 250px;
+    }
+    .lipato {
+      background-color: #FFB7B7 !important;
+      border: 2.5px solid #FF6B6B !important;
+      box-shadow: 0 2px 0 #E55A5A !important;
+    }
+  </style>
+</head>
+<body>
+  <div id="bonit"></div>
+  <div id="calculadora">
+    <div id="display">0</div>
+    <div class="linha">
+      <button onclick="adicionar('7', this)">7</button>
+      <button onclick="adicionar('8', this)">8</button>
+      <button onclick="adicionar('9', this)">9</button>
+      <button class="btn-operador"onclick="adicionar('/', this)">÷</button>
+    </div>
+    <div class="linha">
+      <button onclick="adicionar('4', this)">4</button>
+      <button onclick="adicionar('5', this)">5</button>
+      <button onclick="adicionar('6', this)">6</button>
+      <button class="btn-operador"onclick="adicionar('*', this)">×</button>
+    </div>
+    <div class="linha">
+      <button onclick="adicionar('1', this)">1</button>
+      <button onclick="adicionar('2', this)">2</button>
+      <button onclick="adicionar('3', this)">3</button>
+      <button class="btn-operador"onclick="adicionar('-', this)">−</button>
+    </div>
+    <div class="linha">
+      <button onclick="adicionar('0', this)">0</button>
+      <button onclick="adicionar('.', this)">.</button>
+      <button onclick="calcular(this)">=</button>
+      <button class="btn-operador"onclick="adicionar('+', this)">+</button>
+    </div>
+    <div class="linha-full">
+      <button class="lipato"onclick="limpar(this)">🧹 Limpar Tudo</button>
+    </div>
+  </div>
 
--- Frame
-frame.Parent = gui
-frame.Size = UDim2.new(0, 200, 0, 150) -- Aumentei a altura para acomodar a TextBox
-frame.Position = UDim2.new(0.5, -100, 0.5, -75) -- Centralizado na tela
-frame.BackgroundColor3 = Color3.new(1, 0, 0)
-frame.Active = true -- Permite que o frame receba eventos de entrada
-frame.Draggable = true -- Torna o frame arrastável
+  <script>
+    let expressao = "";
+  
+    function animarBotao(botao) {
+      if (!botao) return;
+      botao.classList.add("sv");
+      setTimeout(() => {
+        botao.classList.remove("sv");
+      }, 500);
+    }
+  
+    function adicionar(valor, botao) {
+      animarBotao(botao);
+      if (expressao.length > 27) {
+        alert("Você ultrapassou o limite de digitos!!!") 
+        return;
+      }
+      let numero = valor;
+      expressao = expressao + numero;
+      let texto = expressao;
+      let display = document.getElementById("display");
 
--- TextLabel
-textLabel.Parent = frame
-textLabel.Text = "MUSIC GUI"
-textLabel.Size = UDim2.new(1, 0, 0.3, 0) -- Ajustei a altura para acomodar a TextBox
-textLabel.Position = UDim2.new(0, 0, 0, 0)
-textLabel.BackgroundColor3 = Color3.new(0, 0, 0)
-textLabel.TextColor3 = Color3.new(1, 1, 1)
+      if (texto.length >= 20) {
+        display.style.fontSize = "15px";
+      } else if (texto.length >= 16) {
+        display.style.fontSize = "22px";
+      } else if (texto.length >= 14) {
+        display.style.fontSize = "26px";
+      } else if (texto.length >= 12) {
+        display.style.fontSize = "28px";
+      } else {
+        display.style.fontSize = "30px";
+      }
+      document.getElementById("display").textContent = expressao;
+    }
 
--- TextBox
-textBox.Parent = frame
-textBox.PlaceholderText = "Digite o ID da música"
-textBox.Size = UDim2.new(1, 0, 0.3, 0)
-textBox.Position = UDim2.new(0, 0, 0.3, 0)
-textBox.BackgroundColor3 = Color3.new(0, 0, 0)
-textBox.TextColor3 = Color3.new(1, 1, 1)
-textBox.TextScaled = true
-
--- TextButton
-textButton.Parent = frame
-textButton.Text = "Tocar"
-textButton.Size = UDim2.new(1, 0, 0.3, 0)
-textButton.Position = UDim2.new(0, 0, 0.6, 0)
-textButton.BackgroundColor3 = Color3.new(0.5, 0.5, 0.5)
-textButton.TextColor3 = Color3.new(1, 1, 1)
-
--- Cria um som e o configura
-local sound = Instance.new("Sound")
-sound.Parent = game.Workspace
-sound.Volume = 1 -- Volume do som (0 a 1)
-
--- Função para tocar música ao clicar no botão
-textButton.MouseButton1Click:Connect(function()
-    local musicId = textBox.Text
-    if musicId ~= "" then
-        sound.SoundId = "rbxassetid://" .. musicId
-        sound:Play()
-        textButton.Text = "Parar de tocar"
-    else
-        textButton.Text = "Tocar"
-    end
-end)
-
--- ImageLabel (Background)
-local background = Instance.new("ImageLabel")
-background.Parent = gui
-background.Image = "rbxassetid://109251560" -- ID da sua imagem
-background.Size = UDim2.new(1, 0, 1, 0) -- Cobre toda a tela
-background.Position = UDim2.new(0, 0, 0, 0) -- Alinha no canto superior esquerdo
-background.BackgroundTransparency = 1 -- Fundo transparente
-background.ScaleType = Enum.ScaleType.Fit -- Ajusta a imagem à tela
+    function calcular(botao) {
+      animarBotao(botao);
+      try {
+        let cherry = eval(expressao);
+        let texto = String(cherry);
+        if (texto.length >= 25) {
+          document.getElementById("display").style.fontSize = "14px";
+        } else if (texto.length >= 20) {
+          document.getElementById("display").style.fontSize = "20px";
+        } else if (texto.length >= 15) {
+          document.getElementById("display").style.fontSize = "25px";
+        } else {
+          document.getElementById("display").style.fontSize = "30px";
+        }
+        document.getElementById("display").textContent = cherry;
+        expressao = String(cherry);
+        expressao = "";
+      } catch {
+        document.getElementById("display").textContent ="erro";
+        expressao = "";
+      }
+    }
+    function limpar(botao) {
+      animarBotao(botao);
+      expressao = "";
+      document.getElementById("display").textContent = "0";
+    }
+  </script>
+</body>
+</html>
