@@ -1,0 +1,16 @@
+{
+  "background_color": "#ff9ef2",
+  "dir": "ltr",
+  "display": "fullscreen",
+  "name": "Calculadora fofa",
+  "orientation": "portrait",
+  "scope": "https://joca123-cpu.github.io/joca123-cpu/",
+  "short_name": "Calfofa",
+  "start_url": "https://joca123-cpu.github.io/joca123-cpu/",
+  "theme_color": "#fca7f7",
+  "id": "Sohp",
+  "lang": "pt",
+  "categories": [
+    "design"
+  ]
+}
